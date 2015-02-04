@@ -8,7 +8,6 @@
  */
 using System;
 using System.Timers;
-using System.Threading;
 using WComp.Beans;
 using WComp.Util;
 
@@ -48,7 +47,16 @@ namespace WComp.Beans
 			}
 		}
 		
+		public Dist (){
 		
+			timer = new Timer(1000);
+			
+			timer.AutoReset = false;
+			
+			timer.Elapsed += wait;
+			
+			
+		}
 
 		/// <summary>
 		/// A method sending an event, which is here simply the argument + 1.
@@ -61,35 +69,21 @@ namespace WComp.Beans
 		   
 			
 		    val = arg/100f;
-			Console.WriteLine("Dist1 :"+val+" cm");
+			if (timer.Enabled){
+				return;
+				
+			}
+		    Console.WriteLine("Dist1 :"+val+" cm");
 			Logger.Info("Dist :"+val+" cm");
-		//	if (timer.Enabled)
-		//		return;
-		//	timer.Start();
-		Thread.Sleep(1000);
+			
+			timer.Start();
+			Logger.Info("Firing event now with value from ValToDist : " + val);
+	
 			FireIntEvent(val);
 			
 			
 		}
-//		public void MyDist()
-//		{
-//			
-//			timer = new System.Timers.Timer(5000);
-//			
-//			timer.AutoReset = false;
-//			
-//			
-//			timer.Elapsed += pauseTimer;
-//			
-//		}
 //		
-//		public void PauseLecture()
-//		{
-//			Thread.Sleep(5000);
-//		}
-//		private  void pauseTimer(Object source,ElapsedEventArgs e) {
-//			PauseLecture();
-//		}
 
 		/// <summary>
 		/// Here are the delegate and his event.
@@ -103,8 +97,15 @@ namespace WComp.Beans
 		public event IntValueEventHandler PropertyChanged;
 		
 		private void FireIntEvent(double i) {
-			if (PropertyChanged != null)
+			if (PropertyChanged != null){
+				
 				PropertyChanged(i);
+			}
+		}
+		private  void wait(Object source,ElapsedEventArgs e) {
+			Logger.Info("Firing event now from WAIT with : " + val );
+			FireIntEvent(val);
 		}
 	}
-}
+	}
+
